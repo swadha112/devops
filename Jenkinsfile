@@ -2,7 +2,7 @@ node {
     stage('Checkout') {
         checkout([$class: 'GitSCM',
                   branches: [[name: '*/main']],
-                  userRemoteConfigs: [[url: 'https://github.com/keyurpatil06/jenkins-test.git']]
+                  userRemoteConfigs: [[url: 'https://github.com/swadha112/devops.git']]
         ])
     }
 
