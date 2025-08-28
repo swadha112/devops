@@ -1,9 +1,9 @@
 pipeline {
-    agent any  // Runs on any available agent
+    agent any  /
 
     tools {
-        maven 'Maven 3.9.11'  // Replace with the correct Maven version installed on Jenkins
-        jdk 'Java 21.0.8'         // Replace with the correct JDK version installed on Jenkins
+        maven 'Maven 3.9.11'  
+        jdk 'Java 21.0.8'        
     }
 
     stages {
@@ -31,8 +31,6 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying the application...'
-                    // Add your deployment commands here. Example:
-                    // sh 'mvn deploy'  // If you have a deploy phase in your POM or custom deploy command
                     echo 'Deploy command needs to be customized based on your deployment method.'
                 }
             }
