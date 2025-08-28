@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven 3.9.11'  // Replace with the correct Maven version installed on Jenkins
-        jdk 'jdk-21'         // Replace with the correct JDK version installed on Jenkins
+        jdk 'Java 21.0.8'         // Replace with the correct JDK version installed on Jenkins
     }
 
     stages {
