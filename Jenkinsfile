@@ -52,7 +52,8 @@
  */
 
 
- node {
+node {
+    // Use Maven and JDK tools configured in Jenkins
     def mvnHome = tool name: 'Maven 3.9.11', type: 'Maven'
     def jdkHome = tool name: 'Java 21.0.8', type: 'JDK'
 
@@ -70,12 +71,12 @@
 
         stage('Build') {
             echo 'Building the Maven project...'
-            sh 'mvn clean install'
+            sh 'mvn clean install'  // Using 'mvn' without the explicit path
         }
 
         stage('Test') {
             echo 'Running tests...'
-            sh 'mvn test'
+            sh 'mvn test'  // Running tests using Maven
         }
 
         stage('Deploy') {
