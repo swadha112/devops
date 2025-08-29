@@ -51,43 +51,49 @@
 }
  */
 
-
 node {
-    // Define environment variables for Maven and Java
-    def MAVEN_HOME = '/opt/homebrew/opt/maven'
-    def JAVA_HOME = '/opt/homebrew/opt/openjdk'
-    def PATH = "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${env.PATH}"
-
+    // Define tools
+    def mvnHome = tool 'Maven 3.9.11'
+    def javaHome = tool 'Java 21.0.8'
+    
+    // Set environment
+    env.JAVA_HOME = javaHome
+    env.PATH = "${javaHome}/bin:${env.PATH}"
+    
     try {
+        // Stage 1: Checkout
         stage('Checkout') {
-            // Checkout code from repository
+            echo 'Checking out source code...'
             checkout scm
         }
-
+        
+        // Stage 2: Build
         stage('Build') {
-            // Run the Maven build command
-            echo 'Building the project...'
-            sh 'mvn clean install'
+            echo 'Building the application...'
+            sh "${mvnHome}/bin/mvn clean compile"
         }
-
+        
+        // Stage 3: Test
         stage('Test') {
-            // Run the Maven test command
             echo 'Running tests...'
-            sh 'mvn test'
-        }
-
-        stage('Deploy') {
-            // Deploy the application
-            echo 'Deploying the application...'
+            sh "${mvnHome}/bin/mvn test"
             
         }
-
+        
+        // Stage 4: Deploy
+        stage('Deploy') {
+            echo 'Deploying application...'
+        }
+        
     } catch (Exception e) {
-        // Catch errors and mark the build as failed
+        // Mark build as failed
         currentBuild.result = 'FAILURE'
+        echo "Build failed: ${e.getMessage()}"
         throw e
+        
     } finally {
-        // Cleanup or notifications if necessary
-        echo 'Pipeline execution completed.'
+        // Clean up workspace
+        echo 'Cleaning up...'
+        cleanWs()
     }
 }
