@@ -53,41 +53,41 @@
 
 
 node {
-    // Use Maven and JDK tools configured in Jenkins
-    def mvnHome = tool name: 'Maven 3.9.11', type: 'Maven'
-    def jdkHome = tool name: 'Java 21.0.8', type: 'JDK'
-
-    environment {
-        MAVEN_HOME = mvnHome
-        JAVA_HOME = jdkHome
-        PATH = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${env.PATH}"
-    }
+    // Define environment variables for Maven and Java
+    def MAVEN_HOME = '/opt/homebrew/opt/maven'
+    def JAVA_HOME = '/opt/homebrew/opt/openjdk'
+    def PATH = "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${env.PATH}"
 
     try {
         stage('Checkout') {
-            echo 'Checking out the repository...'
+            // Checkout code from repository
             checkout scm
         }
 
         stage('Build') {
-            echo 'Building the Maven project...'
-            sh 'mvn clean install'  // Using 'mvn' without the explicit path
+            // Run the Maven build command
+            echo 'Building the project...'
+            sh 'mvn clean install'
         }
 
         stage('Test') {
+            // Run the Maven test command
             echo 'Running tests...'
-            sh 'mvn test'  // Running tests using Maven
+            sh 'mvn test'
         }
 
         stage('Deploy') {
+            // Deploy the application
             echo 'Deploying the application...'
-            echo 'Deploy command needs to be customized based on your deployment method.'
+            
         }
 
     } catch (Exception e) {
+        // Catch errors and mark the build as failed
         currentBuild.result = 'FAILURE'
         throw e
     } finally {
+        // Cleanup or notifications if necessary
         echo 'Pipeline execution completed.'
     }
 }
