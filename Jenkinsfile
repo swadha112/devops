@@ -99,47 +99,30 @@ node {
 }
  */
 
- pipeline {
-    agent any
-    
-    environment {
-        PYTHON_HOME = '/usr/bin/python3'
-        PATH = "${PYTHON_HOME}/bin:${env.PATH}"
-    }
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout code from repository
-                checkout scm
-            }
-        }
+ node {
+  stage('Checkout') {
+    checkout scm
+  }
 
-        stage('Setup Environment') {
-            steps {
-                // Set up environment and install dependencies
-                sh 'python3 -m venv venv'
-                sh './venv/bin/pip install -r requirements.txt'
-            }
-        }
+  stage('Set up Python venv & deps') {
+    sh '''
+      python3 -m venv venv
+      ./venv/bin/pip install --upgrade pip
+      ./venv/bin/pip install -r requirements.txt
+      mkdir -p reports
+    '''
+  }
 
-        stage('Run Tests') {
-            steps {
-                // Run pytest with the necessary options
-                sh './venv/bin/pytest --maxfail=1 --disable-warnings -q'
-            }
-        }
+  stage('Run tests (headless)') {
+    withEnv(['HEADLESS=1']) {
+      sh '''
+        ./venv/bin/pytest --junitxml=reports/junit.xml
+      '''
     }
+  }
 
-    post {
-        always {
-            echo 'Pipeline completed.'
-        }
-        success {
-            echo 'Tests passed.'
-        }
-        failure {
-            echo 'Tests failed.'
-        }
-    }
+  stage('Publish results') {
+    junit 'reports/junit.xml'
+    archiveArtifacts artifacts: 'reports/**/*.xml', fingerprint: true, onlyIfSuccessful: false
+  }
 }
