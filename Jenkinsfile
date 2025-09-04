@@ -50,7 +50,7 @@
     }
 }
  */
-
+/* 
 node {
     // Define tools
     def mvnHome = tool 'Maven 3.9.11'
@@ -95,5 +95,51 @@ node {
         // Clean up workspace
         echo 'Cleaning up...'
         cleanWs()
+    }
+}
+ */
+
+ pipeline {
+    agent any
+    
+    environment {
+        PYTHON_HOME = '/usr/bin/python3'
+        PATH = "${PYTHON_HOME}/bin:${env.PATH}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from repository
+                checkout scm
+            }
+        }
+
+        stage('Setup Environment') {
+            steps {
+                // Set up environment and install dependencies
+                sh 'python3 -m venv venv'
+                sh './venv/bin/pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                // Run pytest with the necessary options
+                sh './venv/bin/pytest --maxfail=1 --disable-warnings -q'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+        success {
+            echo 'Tests passed.'
+        }
+        failure {
+            echo 'Tests failed.'
+        }
     }
 }
